@@ -145,10 +145,26 @@ footer { text-align: center; padding: 1.75rem; border-top: 1px solid var(--borde
   .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
   .edu-grid { grid-template-columns: 1fr; }
 }
+
+/* PARALLAX ORBS */
+.orb { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; filter: blur(90px); opacity: 0.07; }
+.orb-1 { width: 500px; height: 500px; background: var(--accent); top: -100px; left: -150px; }
+.orb-2 { width: 450px; height: 450px; background: var(--accent2); bottom: 0; right: -150px; }
+.orb-3 { width: 350px; height: 350px; background: #a78bfa; top: 50%; left: 40%; }
+
+/* CURSOR TRAIL */
+.trail { position: fixed; border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); opacity: 0; }
+
+/* ensure all content is above orbs */
+nav, section, footer { position: relative; z-index: 2; }
 </style>
 </head>
 <body>
 
+
+<div class="orb orb-1" id="orb1"></div>
+<div class="orb orb-2" id="orb2"></div>
+<div class="orb orb-3" id="orb3"></div>
 <nav>
   <a href="#home" class="nav-logo">AK</a>
   <ul class="nav-links" id="nav-links">
@@ -390,7 +406,60 @@ footer { text-align: center; padding: 1.75rem; border-top: 1px solid var(--borde
 
 <footer>Designed &amp; Built &middot; Aditya Kaushik &middot; 2025</footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js">
+// PARALLAX ORBS
+var orb1 = document.getElementById('orb1');
+var orb2 = document.getElementById('orb2');
+var orb3 = document.getElementById('orb3');
+window.addEventListener('scroll', function() {
+  var sy = window.scrollY;
+  orb1.style.transform = 'translate(' + (sy * 0.04) + 'px, ' + (sy * 0.07) + 'px)';
+  orb2.style.transform = 'translate(' + (-sy * 0.05) + 'px, ' + (-sy * 0.04) + 'px)';
+  orb3.style.transform = 'translate(' + (sy * 0.02) + 'px, ' + (-sy * 0.06) + 'px)';
+}, { passive: true });
+
+// CURSOR TRAIL
+(function() {
+  var TRAIL = 16;
+  var colors = ['rgba(200,169,110,', 'rgba(124,159,255,', 'rgba(167,139,250,'];
+  var dots = [];
+  for (var i = 0; i < TRAIL; i++) {
+    var d = document.createElement('div');
+    d.className = 'trail';
+    var size = Math.max(3, 8 - i * 0.35);
+    d.style.cssText = 'width:' + size + 'px;height:' + size + 'px;background:' + colors[i % 3] + (1 - i / TRAIL) * 0.75 + ')';
+    document.body.appendChild(d);
+    dots.push({ el: d, x: 0, y: 0 });
+  }
+  var mx = 0, my = 0;
+  document.addEventListener('mousemove', function(e) { mx = e.clientX; my = e.clientY; });
+  function animTrail() {
+    var px = mx, py = my;
+    for (var i = 0; i < dots.length; i++) {
+      var speed = 0.35 - i * 0.016;
+      dots[i].x += (px - dots[i].x) * speed;
+      dots[i].y += (py - dots[i].y) * speed;
+      dots[i].el.style.left = dots[i].x + 'px';
+      dots[i].el.style.top = dots[i].y + 'px';
+      dots[i].el.style.opacity = 1 - i / dots.length;
+      px = dots[i].x; py = dots[i].y;
+    }
+    requestAnimationFrame(animTrail);
+  }
+  animTrail();
+})();
+</script><script>
+
+// Build email link at runtime to avoid Cloudflare obfuscation
+(function() {
+  var u = 'adideepakk19';
+  var d = 'gmail.com';
+  var el = document.getElementById('email-link');
+  if (el) {
+    el.href = 'mailto:' + u + '@' + d;
+  }
+})();
+
 // Typewriter
 var phrases = ['Data Analyst', 'ML Engineer', 'BI Developer', 'Analytics Strategist'];
 var pi = 0, ci = 0, deleting = false;
